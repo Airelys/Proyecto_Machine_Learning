@@ -6,6 +6,7 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 from string import punctuation
+import json
 
 
 def vectorizer (dicts):
@@ -14,19 +15,23 @@ def vectorizer (dicts):
         dicts[i]['amounts'] = []
         dicts[i]['vector_values'] = []
 
+        text =[]
+
         for j in dicts[i]['text']:
             text_tokens = tokenize(j)
-            text_csv(text_tokens)
-            words = pd.read_csv("text.csv")
+            text.append(text_tokens)
 
-            count = CountVectorizer()
-            vect = TfidfVectorizer(max_features=100)
+        text_csv(text)
+        words = pd.read_csv("text.csv")
 
-            amounts = count.fit_transform(words.description).toarray()
-            values = vect.fit_transform(words.description).toarray()
+        count = CountVectorizer()
+        vect = TfidfVectorizer(max_features=100)
 
-            dicts[i]['amounts'].append(amounts)
-            dicts[i]['vector_values'].append(values)
+        amounts = count.fit_transform(words.description).toarray()
+        values = vect.fit_transform(words.description).toarray()
+
+        dicts[i]['amounts'].append(amounts)
+        dicts[i]['vector_values'].append(values)
 
     return dicts
 
@@ -57,3 +62,12 @@ def text_csv (list):
         writer.writeheader()
         for i in list:
             writer.writerow({'description': i})
+
+def take_data():
+
+    with open('data/data.json', 'r+') as file:
+        data = json.load(file)
+
+    dict = vectorizer(data)
+
+    return dict
