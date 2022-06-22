@@ -71,3 +71,21 @@ def take_data():
     dict = vectorizer(data)
 
     return dict
+
+
+def take_data_reduc ():
+
+    with open('data/data.json', 'r+') as file:
+        dicts = json.load(file)
+    words = []
+    for i in  dicts:
+        text =[]
+        for j in dicts[i]['text']:
+            text_tokens = tokenize(j)
+            text.append(text_tokens)
+
+        text_csv(text)
+        word = pd.read_csv("text.csv")
+        words.append(word)
+
+    return words
