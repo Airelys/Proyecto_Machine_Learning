@@ -1,7 +1,6 @@
 import time
 import numpy as np
 import matplotlib.pyplot as plt
-from vectorizer import take_data, vectorizer
 from reduction import reduction
 from sklearn import svm
 from sklearn.covariance import EllipticEnvelope

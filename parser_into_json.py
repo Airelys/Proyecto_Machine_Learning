@@ -51,7 +51,7 @@ social_red = "telegram"
 
 path = Path(__file__).parent.absolute()
 
-with open('data/data.json', 'r+') as file, open(social_red + '/text.txt', 'r+') as text:
+with open('data/data.json', 'r+') as file, open(social_red + '/text_2.txt', 'r+') as text:
     data = json.load(file)
 
     
