@@ -102,11 +102,9 @@ for i in range(len(dataset)):
 X_train, X_test, y_train, y_test = train_test_split(X_for_supervised, y_for_supervised, train_size = 0.7)
 
 
-
 for name, algorithm in supervised_algorithms:
     
     algorithm.fit(X_train, y_train)
-    
     
     if len(names) < 6:
         disp = plot_confusion_matrix(algorithm, X_test, y_test,
@@ -117,5 +115,5 @@ for name, algorithm in supervised_algorithms:
         
         plt.show()
     else:
-        print(str(name) + " has score: " + str(algorithm.score(X_test, y_test)))
+        print(name + " has score: " + str(algorithm.score(X_test, y_test)))
 
