@@ -34,11 +34,14 @@ supervised_algorithms = [("GaussianNB", GaussianNB()),
                          ("DecisionTreeClassifier", DecisionTreeClassifier(criterion = "entropy")),
                          ("RandomForestClassifier", RandomForestClassifier(criterion = "entropy"))]
 
-dataset = reduction()
+names, dataset = reduction()
 
-names = []
+print(names)
+
+
 
 rng = np.random.RandomState(42)
+
 
 plt.figure(figsize=(8,6))
 plt.subplots_adjust(left=.02, right=.98, bottom=.001, top=.96, wspace=.05,
@@ -48,6 +51,7 @@ count = 0
 
 
 # Puesta en marcha de los algoritmos de aprendizaje no supervisado:
+
 
 for X in dataset:
     for name,algorithm in non_supervised_algorithms:
@@ -78,6 +82,7 @@ for X in dataset:
 
 plt.show()
 
+
 # Puesta en marcha de los algoritmos de aprendizaje supervisado
 
 y_for_evaluated = []
@@ -89,20 +94,28 @@ X_for_supervised = []
 y_for_supervised = []
 
 for i in range(len(dataset)):
-    X_for_supervised = X_for_supervised + dataset[i]
+    for j in range(len(dataset[i])):
+        X_for_supervised.append(dataset[i][j])
     y_for_supervised = y_for_supervised + y_for_evaluated[i]
 
 
 X_train, X_test, y_train, y_test = train_test_split(X_for_supervised, y_for_supervised, train_size = 0.7)
 
-for name, algorithm in supervised_algorithms:
-    algorithm.fit(X_train, y_train)
-    disp = plot_confusion_matrix(algorithm, X_test, y_test,
-                             display_labels=['Negative Class', 'Positive Class'],
-                             cmap=plt.cm.Blues,
-                             normalize='true')
-    disp.ax_.set_title("Algorithm Used: ", algorithm)
-    
-    algorithm.score(X_test, y_test)
 
+
+for name, algorithm in supervised_algorithms:
+    
+    algorithm.fit(X_train, y_train)
+    
+    
+    if len(names) < 6:
+        disp = plot_confusion_matrix(algorithm, X_test, y_test,
+                                display_labels=names,
+                                cmap=plt.cm.Blues,
+                                normalize='true')
+        disp.ax_.set_title("Algorithm Used: " + name + "\n" + "General_Score: " + str(algorithm.score(X_test, y_test)))
+        
+        plt.show()
+    else:
+        print(str(name) + " has score: " + str(algorithm.score(X_test, y_test)))
 
