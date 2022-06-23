@@ -35,8 +35,6 @@ def run_algorithms():
 
     names, dataset, y = reduction()
 
-    rng = np.random.RandomState(42)
-
     count = 0 
 
 
@@ -67,6 +65,7 @@ def run_algorithms():
             # Calcule el coeficiente de Silhouette medio de todos los puntos de datos.
 
             s_mean = metrics.silhouette_score(X, y_predict)
+
             
             # Para la configuración de los graficos -----------------------------------------------------------------------------------
             fig, (ax1, ax2) = plt.subplots(1, 2)
