@@ -1,4 +1,4 @@
 
-from algorithms import run_algorithms
+#from algorithms import run_algorithms
 
-run_algorithms()
+#run_algorithms()
