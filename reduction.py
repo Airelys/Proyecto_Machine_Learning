@@ -10,8 +10,10 @@ def reduction ():
 
     data = take_data()
     dataset = []
+    users =[]
 
     for user in data:
+        users.append(user)
         for j in data[user]['vector_values']:
             X_features =j
 
@@ -36,4 +38,4 @@ def reduction ():
             plt.scatter(x_3d[:,0], x_3d[:,1])
             plt.show()
 
-    return dataset
+    return users, dataset
