@@ -76,6 +76,8 @@ for X in dataset:
 
     count += 1
 
+plt.show()
+
 # Puesta en marcha de los algoritmos de aprendizaje supervisado
 
 y_for_evaluated = []
@@ -103,4 +105,4 @@ for name, algorithm in supervised_algorithms:
     
     algorithm.score(X_test, y_test)
 
-plt.show()
+
