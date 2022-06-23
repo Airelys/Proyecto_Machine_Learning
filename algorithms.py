@@ -1,7 +1,6 @@
 import time
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.mixture import GaussianMixture
 from reduction import reduction
 from sklearn import svm
 from sklearn.covariance import EllipticEnvelope
@@ -12,6 +11,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import plot_confusion_matrix
+from sklearn import metrics
+import matplotlib.cm as cm
 
 import warnings
 
@@ -35,7 +36,7 @@ supervised_algorithms = [("GaussianNB", GaussianNB()),
                         ("DecisionTreeClassifier", DecisionTreeClassifier(criterion = "entropy")),
                         ("RandomForestClassifier", RandomForestClassifier(criterion = "entropy"))]
 
-names, dataset = reduction()
+names, dataset, y = reduction()
 
 print(names)
 
@@ -43,11 +44,6 @@ print(names)
 
 rng = np.random.RandomState(42)
 
-
-plt.figure(figsize=(8,6))
-plt.subplots_adjust(left=.02, right=.98, bottom=.001, top=.96, wspace=.05,
-                    hspace=.01)
-plot_num = 1
 count = 0 
 
 
@@ -60,29 +56,76 @@ for X in dataset:
         t0 = time.time()
         algorithm.fit(X)
         t1 = time.time()
-        plt.subplot(len(dataset), len(non_supervised_algorithms), plot_num)
-        if count == 0:
-            plt.title(name, size=18)
 
         y_predict = algorithm.fit(X).predict(X)
         print("y_predict \n" + str(y_predict))
 
-        colors = np.array(['#377eb8', '#ff7f00'])
-        plt.scatter(X[:, 0], X[:, 1], s=10, color=colors[(y_predict+1)//2 ])
+       
+        # Calcular la homogeneidad y la integridad de los clusters.
+        
+        homogeneity = metrics.homogeneity_score(y[count], y_predict)
+        
+        completeness = metrics.completeness_score(y[count], y_predict)
+        
+        # Calcular el coeficiente de coeficiente de Silhouette para cada muestra.
+    
+        s = metrics.silhouette_samples(X, y_predict)
+        
+        # Calcule el coeficiente de Silhouette medio de todos los puntos de datos.
 
-        plt.xlim(-2, 2)
-        plt.ylim(-2, 2)
-        plt.xticks(())
-        plt.yticks(())
-        plt.text(.99, .01, ('%.2fs' % (t1 - t0)).lstrip('0'),
-                transform=plt.gca().transAxes, size=15,
-                horizontalalignment='right')
-        plot_num += 1
+        s_mean = metrics.silhouette_score(X, y_predict)
+        
+        # Para la configuración de los graficos -----------------------------------------------------------------------------------
+        fig, (ax1, ax2) = plt.subplots(1, 2)
+        fig.set_size_inches(18, 7)
+        
+        # Configura el gráfico.
+        plt.suptitle('Silhouette analysis ' + name + ' : {}'.format(2),
+                     fontsize=14, fontweight='bold')
+        
+        # Configura el 1er subgrafico.
+        ax1.set_xlabel("The silhouette coefficient values")
+        ax1.set_ylabel("Cluster label")
+        ax1.set_xlim([-3, 3])
+        ax1.set_ylim([0, len(X) + (7) * 10])
+        
+        # Configura el 2do subgrafico.
+        plt.suptitle('Silhouette analysis ' + name + ' : ' + '\n Homogeneity: {}, Completeness: {}, Mean Silhouette score: {}'.format(homogeneity,
+                                                                                            completeness,
+                                                                                            s_mean))
+        
+        
+        # Para el 1er subgráfico ------------------------------------------------------------------------------------------
+        
+        # Grafica el coeficiente de Silhouette para cada muestra.
+        cmap = cm.get_cmap("Spectral")
+        y_lower = 10
+        for i in range(2):
+            ith_s = s[y_predict == i]
+            ith_s.sort()
+            size_i = ith_s.shape[0]
+            y_upper = y_lower + size_i
+            color = cmap(float(i) / 2)
+            ax1.fill_betweenx(np.arange(y_lower, y_upper), 0, ith_s,
+                              facecolor=color, edgecolor=color, alpha=0.7)
+            ax1.text(-0.05, y_lower + 0.5 * size_i, str(i))
+            y_lower = y_upper + 10
+            
+        # Trazar el coeficiente de silueta medio utilizando la línea discontinua vertical roja.
+        ax1.axvline(x=s_mean, color="red", linestyle="--")
+        
+        # Para el 2do subgráfico 
+        
+        # Grafica las predicciones
+        colors = cmap(y_predict.astype(float) / 2)
+        ax2.scatter(X[:,0], X[:,1], c=colors)
+        
+        plt.show()
 
     count += 1
 
-plt.show()
 
+##################################################################################################################
 
 # Puesta en marcha de los algoritmos de aprendizaje supervisado
 
